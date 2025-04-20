@@ -186,7 +186,7 @@ It might feel natural to think that the better the teacher, the better the disti
 ## Faster training with progressive distillation
 
 
-A common mitigation is to let the student progressively distill from increasingly more performant teachers, which was recently used to train [Gemini Flash] (https://arxiv.org/abs/2403.05530). In our work, we consider a particular form of progressive distillation which trains the student using outputs from intermediate checkpoints of the teacher. Figure 1 shows an example where the intermediate checkpoints are chosen at regular intervals.
+A common mitigation is to let the student progressively distill from increasingly more performant teachers, which was recently used to train [Gemini Flash](https://arxiv.org/abs/2403.05530). In our work, we consider a particular form of progressive distillation which trains the student using outputs from intermediate checkpoints of the teacher. Figure 1 shows an example where the intermediate checkpoints are chosen at regular intervals.
 
 ![Progressive Distillation](assets/fig2.png){: width="30%" .center-image }
 
