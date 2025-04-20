@@ -175,7 +175,8 @@ Knowledge distillation has been a cornerstone technique in training AI models ([
 
   
 
-  
+![CE vs Distillation](assets/fig1.png){: width="30%" .center-image }
+
 
 ------
 
@@ -195,7 +196,8 @@ Knowledge distillation has been a cornerstone technique in training AI models ([
 
 A common mitigation is to let the student progressively distill from increasingly more performant teachers, which was recently used to train [Gemini Flash] (https://arxiv.org/abs/2403.05530). In our work, we consider a particular form of progressive distillation which trains the student using outputs from intermediate checkpoints of the teacher. Figure 1 shows an example where the intermediate checkpoints are chosen at regular intervals.
 
-  
+![Progressive Distillation](assets/fig2.png){: width="30%" .center-image }
+
   
 
 We show that progressive distillation significantly accelerates the training of smaller models across multiple settings. Our experiments span three data setups:
@@ -223,7 +225,7 @@ We show that progressive distillation significantly accelerates the training of 
 In all cases, progressive distillation enables a student model (MLP or Transformer) to learn efficiently from its teacher, whereas one-shot distillation and cross-entropy training lead to slow learning or failure.
 
   
-  
+![Training speed of progressive distillation](assets/main.png){: width="30%" .center-image }
   
 
 This aligns with the observations of an extensive line of work on progressive distillation. For example, [Mirzadeh et al.,2019](https://arxiv.org/abs/1902.03393); [Jin et al.,2019](https://openaccess.thecvf.com/content_ICCV_2019/html/Jin_Knowledge_Distillation_via_Route_Constrained_Optimization_ICCV_2019_paper.html); [Jafari et al., 2021](https://arxiv.org/abs/2104.07163); [Harutyunyan et al., 2022](https://arxiv.org/abs/2301.12245) show performance improvements on vision tasks. One common reasoning behind the success of progressive distillation is that it reduces the``capacity gap’’ between the teacher and the student, which helps a student generalize better. Instead, we show an optimization benefit of progressive distillation, where the student learns faster due to an easy-to-learn curriculum supervision from the intermediate checkpoints.
@@ -257,6 +259,7 @@ Here, we will extensively study the behavior of progressive distillation on spar
 Sparse parity is a well studied synthetic task that has been regularly used to understand how neural networks learn the right features for solving a task ([Barak et al’22](https://proceedings.neurips.cc/paper_files/paper/2022/hash/884baf65392170763b27c914087bde01-Abstract-Conference.html), [Edelman et al.’23](https://arxiv.org/abs/2309.03800)). In this task, the input is a boolean sequence containing +1 and -1, and the output is a **product of the input coordinates at a hidden sparse set of indices**, called the **support**. 
 
   
+![Sparse Parity](assets/fig3.png){: width="30%" .center-image }
 
   
 
@@ -268,12 +271,15 @@ The task of sparse parity has been known to be a computationally difficult probl
 
 When we train an MLP (or a transformer) on this task, we observe a **sharp phase transition** in performance where the model rapidly transitions from random guessing to near-perfect accuracy. As suggested by our discussion above, we observe that **wider MLPs** (or **transformers with more attention heads**) learn faster than smaller (narrower) models. Intuitively, the dormant phase before this transition indicates a search phase for the model, where the model’s neurons search for the support. A larger model can search faster, because of its higher capacity in terms of the number of neurons that it can use to conduct the search.
 
-  
+
+![Training speed of big models](assets/fig4.png){: width="30%" .center-image }
+
   
 
 Now, we compare different distillation strategies to train a smaller model faster, using the checkpoints of a larger model that trained successfully. We observe that **progressive distillation enables the student to learn at the same speed as the teacher!** However, one-shot distillation, where we use output of the final perfect teacher checkpoint, fails to train the student. This is expected as the final teacher checkpoint which has perfectly learned the task won’t provide any additional information compared to the true labels themselves.
 
   
+![Progressive distillation faster](assets/fig5.png){: width="30%" .center-image }
 
   
 
@@ -284,15 +290,22 @@ Now, we compare different distillation strategies to train a smaller model faste
 Before delving into details on progressive distillation, let's break down the difficulty in learning sparse parity. As discussed before, sparse parity is known to be a difficult task, because of the difficulty in searching for the right set of indices, that form the **support**, from input-label pairs. However, the task **becomes easy if we had access to linear functions on the support coordinates.** Say, we had access to  **noisy labels**, where the noise depends on a linear function on the support coordinates, with the noise removed slowly over time. One can then show that with access to such noisy labels, the sparse parity task can be  **easily learned in polynomial** time.
 
   
-  
+![Breaking sparse parity](assets/fig6.png){: width="30%" .center-image }
+
 
 The secret of progressive distillation is that the predictions of certain intermediate checkpoints **closely resemble** the noisy labels. More formally, the intermediate checkpoint that falls within the sharp phase transition of the teacher **leaks the information on the support** to the student, **via  easier-to-learn functions**. These are also responsible for **the errors or mistakes that its output makes.** Thus, a student learns better when learning from the teacher's mistakes during the course of training, which forms an easy-to-learn curriculum.
+
+![Breaking sparse parity](assets/fig7.png){: width="30%" .center-image }
+
 
   **Q2: Are all teacher checkpoints needed for supervision during progressive distillation?**
 
   
 
 No! In fact, we show that instead of storing all intermediate checkpoints of the teacher, only two teacher checkpoints are needed for successful and efficient progressive distillation. The first teacher checkpoint should fall during the phase transition of the teacher, while the second checkpoint can be set to be the final teacher checkpoint. This supports our claim, that progressive distillation is successful because of helpful noise present in the predictions of the teacher checkpoint during its phase transition.
+
+![2-shot distillation](assets/fig8.png){: width="30%" .center-image }
+
 
 
 ## Beyond Sparse Parity
