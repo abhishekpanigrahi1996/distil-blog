@@ -180,19 +180,11 @@ Knowledge distillation has been a cornerstone technique in training AI models ([
 
 ------
 
-  
 
-  
-
-  
+It might feel natural to think that the better the teacher, the better the distilled student. However, a persistent challenge in practice is that a better teacher (a better performing model) does not always yield a better student, possibly due to a “capacity gap” ([Mirzadeh et al. 2019](https://arxiv.org/abs/1902.03393), [Busbridge et al.’24](https://arxiv.org/abs/2502.08606)). 
 
 ## Faster training with progressive distillation
 
-  
-
-  
-
-  
 
 A common mitigation is to let the student progressively distill from increasingly more performant teachers, which was recently used to train [Gemini Flash] (https://arxiv.org/abs/2403.05530). In our work, we consider a particular form of progressive distillation which trains the student using outputs from intermediate checkpoints of the teacher. Figure 1 shows an example where the intermediate checkpoints are chosen at regular intervals.
 
