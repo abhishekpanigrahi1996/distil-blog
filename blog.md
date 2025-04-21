@@ -266,23 +266,32 @@ The benefit of an implicit curriculum extends beyond sparse parity. In the follo
 
 - Motivated by observations on PCFG, we  measure the change in behavior of the models across the phases through the dependence of their predictions on **n-gram** neighboring context. We observe (see middle figure below) inflection points in the model's dependence on **3-gram** neighboring context during the second phase, after which the model transitions to using longer **n-gram** context for predictions. We call this an **n-gram curriculum**.
 
-
+![real-world](assets/fig9.png){: width="30%" .center-image }
 
 ## More details on the n-gram curriculum on PCFGs
 
 Here, we dive a little deeper into our experiments on the n-gram curriculum. We use PCFGs as our synthetic testbed and discuss in the setting of BERT training. PCFGs represent a simplistic synthetic setup primarily designed to capture hierarchical relationships between words in a sentence.  BERT models are trained with masked language modeling, where they are trained to predict masked words in a given sentence. For example, given an input 'The [mask] ran away', the model is expected to infer plausible completions for [mask], such as 'cat'. We refer interested readers to appendix D.1 and D.5.1 for more details in our paper.
 
-One important concept in natural language processing is **n-grams**, which is defined as co-occurring ``n’’ words in natural language. For example, ``The cat’’ and ``ran away’’ are examples of 2-grams.
+![pcfg](assets/fig10.png){: width="30%" .center-image }
 
-To optimally perform a masked prediction task on PCFGs, a model must leverage all possible dependencies that the masked word can form with other words under the PCFG-defined structure. In the above example, the model should use the likelihood of different words that can form a 4-gram with “The __ ran away”.  However, because of the hierarchical nature, one would expect the model to learn to use shorter n-grams first, and transition slowly to using longer n-grams, which we confirm empirically.
 
-**The probe - Perturbing n-grams:** A model that has learned to connect long-range dependencies among words via capturing higher ``n’’-gram structure can be robust to removing words in the shorter ``n’’-gram context surrounding the [mask] position.
+One important concept in natural language processing is **n-grams**, which is defined as co-occurring n words in natural language. For example, "The cat" and "ran away" are examples of 2-grams.
 
-We measure the robustness of the model’s output to removal of '`n’’-gram tokens through a measure called M_{robust}. Specifically, we quantify the change in the model’s predictions via total variation distance, measured before and after removing n-gram tokens for varying values of n. We find that the middle phase—corresponding to the sharp phase transition in the model's loss—marks an inflection point in the model’s robustness behavior. Prior to this inflection, the model’s output is highly sensitive to the removal of 3-gram tokens, indicating a reliance on local dependencies. After the inflection point, robustness against lower n-gram removal sharply decreases, suggesting that the model begins leveraging longer-range contextual information rather than short-range dependencies.
+To optimally perform a masked prediction task on PCFGs, a model must leverage all possible dependencies that the masked word can form with other words under the PCFG-defined structure. In the above example, the model should use the likelihood of different words that can form a 4-gram with "The __ ran away".  However, because of the hierarchical nature, one would expect the model to learn to use shorter n-grams first, and transition slowly to using longer n-grams, which we confirm empirically.
+
+**The probe - Perturbing n-grams:** A model that has learned to connect long-range dependencies among words via capturing higher n-gram structure can be robust to removing words in the shorter n-gram context surrounding the [mask] position.
+
+We measure the robustness of the model’s output to removal of n-gram tokens through a measure called M_{robust}. Specifically, we quantify the change in the model’s predictions via total variation distance, measured before and after removing n-gram tokens for varying values of n. We find that the middle phase—corresponding to the sharp phase transition in the model's loss—marks an inflection point in the model’s robustness behavior. Prior to this inflection, the model’s output is highly sensitive to the removal of 3-gram tokens, indicating a reliance on local dependencies. After the inflection point, robustness against lower n-gram removal sharply decreases, suggesting that the model begins leveraging longer-range contextual information rather than short-range dependencies.
+
+![pcfg_expts](assets/fig11.png){: width="30%" .center-image }
+
 
 Thus, the curriculum is defined in terms of the prediction dependencies on neighboring n-gram context words. We refer to the transition from short to long n-gram dependencies as the implicit n-gram curriculum, and connect the success of progressive distillation to such curriculum.
 
 **Progressive distillation can be effectively performed with just 2 checkpoints:** To further support the idea that the underlying curriculum drives the success of progressive distillation, we revisit our experiments where we try to utilize only two checkpoints. In particular, we show that successful progressive distillation can be achieved by utilizing just two teacher checkpoints: one corresponding to the inflection point, and another corresponding to the final trained teacher. This finding is consistent with our observations on sparse parity tasks. 
+
+![2-shot_pcfg](assets/fig12.png){: width="30%" .center-image }
+
 
 ## Interesting future directions
 
