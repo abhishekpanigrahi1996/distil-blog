@@ -159,13 +159,13 @@ Knowledge distillation has been a cornerstone technique in training AI models ([
   
 
 —----
+
 **Cross Entropy from training data:** On input and label pairs, we simply compute cross entropy loss of the model’s prediction with the true label.
 
 **Knowledge Distillation:** We compare the student’s model output with a teacher’s model output using a KL divergence loss.
   
 
 ![CE vs Distillation](assets/fig1.png){: width="30%" .center-image }
-
 
 ------
 
@@ -275,20 +275,25 @@ Here, we dive a little deeper into our experiments on the n-gram curriculum. We 
 ![pcfg](assets/fig10.png){: width="30%" .center-image }
 
 
-One important concept in natural language processing is **n-grams**, which is defined as co-occurring n words in natural language. For example, "The cat" and "ran away" are examples of 2-grams.
+One important concept in natural language processing is **n-grams**, which is defined as co-occurring n words in natural language. For example, "The cat" and "ran away" are examples of 2-grams. Under PCFGs, the hierarchical relationships between words are captured by a hierarchical relation tree among n-grams of different sizes.
 
-To optimally perform a masked prediction task on PCFGs, a model must leverage all possible dependencies that the masked word can form with other words under the PCFG-defined structure. In the above example, the model should use the likelihood of different words that can form a 4-gram with "The __ ran away".  However, because of the hierarchical nature, one would expect the model to learn to use shorter n-grams first, and transition slowly to using longer n-grams, which we confirm empirically.
+To optimally perform masked prediction on PCFGs, a model must predict the hierarchical relation tree on the given sentence to optimally determine the most probable masked word. Because of the hierarchical nature, one would expect the model to first learn to use shorter n-grams first, and then transition slowly to learn higher levels of the relation tree. However, a sub-optimal model will stop learning after leveraging shorter n-grams for predictions.
 
-**The probe - Perturbing n-grams:** A model that has learned to connect long-range dependencies among words via capturing higher n-gram structure can be robust to removing words in the shorter n-gram context surrounding the [mask] position.
 
-We measure the robustness of the model’s output to removal of n-gram tokens through a measure called $M_{robust}$
-. Specifically, we quantify the change in the model’s predictions via total variation distance, measured before and after removing n-gram tokens for varying values of n. We find that the middle phase—corresponding to the sharp phase transition in the model's loss—marks an inflection point in the model’s robustness behavior. Prior to this inflection, the model’s output is highly sensitive to the removal of 3-gram tokens, indicating a reliance on local dependencies. After the inflection point, robustness against lower n-gram removal sharply decreases, suggesting that the model begins leveraging longer-range contextual information rather than short-range dependencies.
+
+**The probe - Perturbing n-grams:** Intuitively, a model that has learned to connect long-range dependencies among words via capturing higher n-gram structure can be robust to removing words in the shorter n-gram context surrounding the [mask] position.
+
+We measure the robustness of the model’s output to removal of n-gram tokens through a measure called $M_{robust}$. Specifically, we quantify the change in the model’s predictions via total variation distance between the distributions before and after removing n-gram tokens, for varying values of n. We find that the middle phase—corresponding to the sharp phase transition in the model's loss—marks an inflection point in the model’s robustness behavior. Prior to this inflection, the model’s output is highly sensitive to the removal of 3-gram tokens, indicating a reliance on local dependencies. After the inflection point, robustness against lower n-gram removal sharply decreases, suggesting that the model begins leveraging longer-range contextual information rather than short-range dependencies.
+
+
 
 ![pcfg_expts](assets/fig11.png){: width="30%" .center-image }
 
-Thus, the curriculum is defined in terms of the prediction dependencies on neighboring n-gram context words. We refer to the transition from short to long n-gram dependencies as the implicit n-gram curriculum, and connect the success of progressive distillation to such curriculum.
+ Motivated by the above observation, we define the curriculum in terms of the prediction dependencies on neighboring n-gram context words. We refer to the transition from short to long n-gram dependencies as the implicit n-gram curriculum, and connect the success of progressive distillation to such curriculum.
 
-**Progressive distillation can be effectively performed with just 2 checkpoints:** To further support the idea that the underlying curriculum drives the success of progressive distillation, we revisit our experiments where we try to utilize only two checkpoints. In particular, we show that successful progressive distillation can be achieved by utilizing just two teacher checkpoints: one corresponding to the inflection point, and another corresponding to the final trained teacher. This finding is consistent with our observations on sparse parity tasks. 
+
+**Progressive distillation can be effectively performed with just one intermediate checkpoint:** To further support the idea that the underlying curriculum drives the success of progressive distillation, we revisit our experiments where we try to utilize only one intermediate checkpoint. In particular, we show that successful progressive distillation can be achieved by first training with the intermediate teacher checkpoint corresponding to the inflection point, followed by training with the final teacher checkpoint for the remainder of the training. This finding is consistent with our observations on sparse parity tasks. 
+
 
 ![2-shot_pcfg](assets/fig12.png){: width="30%" .center-image }
 
