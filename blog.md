@@ -281,10 +281,10 @@ To optimally perform a masked prediction task on PCFGs, a model must leverage al
 
 **The probe - Perturbing n-grams:** A model that has learned to connect long-range dependencies among words via capturing higher n-gram structure can be robust to removing words in the shorter n-gram context surrounding the [mask] position.
 
-We measure the robustness of the model’s output to removal of n-gram tokens through a measure called M_{robust}. Specifically, we quantify the change in the model’s predictions via total variation distance, measured before and after removing n-gram tokens for varying values of n. We find that the middle phase—corresponding to the sharp phase transition in the model's loss—marks an inflection point in the model’s robustness behavior. Prior to this inflection, the model’s output is highly sensitive to the removal of 3-gram tokens, indicating a reliance on local dependencies. After the inflection point, robustness against lower n-gram removal sharply decreases, suggesting that the model begins leveraging longer-range contextual information rather than short-range dependencies.
+We measure the robustness of the model’s output to removal of n-gram tokens through a measure called $M_{robust}$
+. Specifically, we quantify the change in the model’s predictions via total variation distance, measured before and after removing n-gram tokens for varying values of n. We find that the middle phase—corresponding to the sharp phase transition in the model's loss—marks an inflection point in the model’s robustness behavior. Prior to this inflection, the model’s output is highly sensitive to the removal of 3-gram tokens, indicating a reliance on local dependencies. After the inflection point, robustness against lower n-gram removal sharply decreases, suggesting that the model begins leveraging longer-range contextual information rather than short-range dependencies.
 
 ![pcfg_expts](assets/fig11.png){: width="30%" .center-image }
-
 
 Thus, the curriculum is defined in terms of the prediction dependencies on neighboring n-gram context words. We refer to the transition from short to long n-gram dependencies as the implicit n-gram curriculum, and connect the success of progressive distillation to such curriculum.
 
