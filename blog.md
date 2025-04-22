@@ -300,6 +300,8 @@ We measure the robustness of the model’s output to removal of n-gram tokens th
 
 ## Interesting future directions
 
+We are excited about the multiple directions our work opens up, several of which we are actively pursuing. A primary limitation of our current approach is the reliance on access to intermediate teacher checkpoints to construct an easy-to-learn curriculum for the student. However, such intermediate checkpoints are often unavailable for state-of-the-art pre-trained models. This raises an important question: can we design an easy-to-learn curriculum using only the final teacher checkpoint?
 
+Additionally, our work thus far has focused primarily on a theoretical framework for distillation in classification settings. In contrast, the prevailing practice is to distill by training a student language model on the generations of a larger teacher model using an autoregressive loss. How can we extend our theoretical framework to capture training from teacher generations? Moreover, what types of tasks benefit most from distillation? Recent work from Deepseek suggests that students can achieve significantly better performance on reasoning tasks when learning from a teacher compared to relying solely on the original training data. We are currently investigating why distillation is particularly helpful in reasoning tasks and what structures within these tasks make distillation effective. In solving reasoning tasks, a key challenge is often searching for the right structure — a connection supported by our findings on sparse parity, where distillation aids in the search process. We are excited to further explore this connection in the future.
 
 
